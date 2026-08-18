@@ -30,6 +30,7 @@ private object Routes {
     const val FLASHCARDS = "flashcards"
     const val SETTINGS = "settings"
     const val DETAIL = "detail/{wordId}"
+    const val ADD_WORD = "add_word"
     fun detail(id: Int) = "detail/$id"
 }
 
@@ -54,8 +55,8 @@ fun AppNavGraph(
             val backStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = backStackEntry?.destination
 
-            // Oculta la barra inferior en la pantalla de detalle para más inmersión.
-            val showBar = currentRoute?.route != Routes.DETAIL
+            // Oculta la barra inferior en las pantallas de detalle y "agregar palabra" para más inmersión.
+            val showBar = currentRoute?.route != Routes.DETAIL && currentRoute?.route != Routes.ADD_WORD
             if (showBar) {
                 NavigationBar {
                     bottomItems.forEach { item ->
@@ -93,7 +94,15 @@ fun AppNavGraph(
                     viewModel = wordViewModel,
                     onWordClick = { navController.navigate(Routes.detail(it.id)) },
                     onGoToFlashcards = { navController.navigate(Routes.FLASHCARDS) },
-                    onGoToSearch = { navController.navigate(Routes.SEARCH) }
+                    onGoToSearch = { navController.navigate(Routes.SEARCH) },
+                    onGoToAddWord = { navController.navigate(Routes.ADD_WORD) }
+                )
+            }
+            composable(Routes.ADD_WORD) {
+                AddWordScreen(
+                    viewModel = wordViewModel,
+                    onBack = { navController.popBackStack() },
+                    onSaved = { navController.popBackStack() }
                 )
             }
             composable(Routes.SEARCH) {

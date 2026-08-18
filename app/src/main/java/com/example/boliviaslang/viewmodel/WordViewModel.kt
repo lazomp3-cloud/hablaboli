@@ -40,6 +40,33 @@ class WordViewModel(private val repository: WordRepository) : ViewModel() {
         viewModelScope.launch { repository.toggleFavorite(word) }
     }
 
+    // --- Agregar nueva palabra desde la app ---
+    fun addWord(
+        term: String,
+        meaning: String,
+        region: String,
+        category: String,
+        exampleSentence: String,
+        exampleTranslation: String,
+        funFact: String,
+        onDone: () -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.addWord(
+                Word(
+                    term = term.trim(),
+                    meaning = meaning.trim(),
+                    region = region.trim().ifBlank { "Todo el país" },
+                    category = category.trim().ifBlank { "General" },
+                    exampleSentence = exampleSentence.trim(),
+                    exampleTranslation = exampleTranslation.trim(),
+                    funFact = funFact.trim()
+                )
+            )
+            onDone()
+        }
+    }
+
     fun markReviewed(word: Word) {
         viewModelScope.launch { repository.markReviewed(word) }
     }

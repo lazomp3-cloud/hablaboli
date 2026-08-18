@@ -27,8 +27,15 @@ interface WordDao {
     @Query("SELECT * FROM words ORDER BY RANDOM()")
     fun getWordsForFlashcards(): Flow<List<Word>>
 
+    // Usado para sincronizar nuevas palabras de ejemplo sin duplicar las que ya existen.
+    @Query("SELECT term FROM words")
+    suspend fun getAllTerms(): List<String>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(words: List<Word>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWord(word: Word)
 
     @Update
     suspend fun update(word: Word)

@@ -7,6 +7,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,61 +24,72 @@ fun HomeScreen(
     viewModel: WordViewModel,
     onWordClick: (Word) -> Unit,
     onGoToFlashcards: () -> Unit,
-    onGoToSearch: () -> Unit
+    onGoToSearch: () -> Unit,
+    onGoToAddWord: () -> Unit
 ) {
     val words by viewModel.allWords.collectAsState()
     val speak = rememberSpeaker()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-            Text(
-                text = "¡Bienvenido!",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+    Scaffold(
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onGoToAddWord,
+                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                text = { Text("Agregar palabra") }
             )
-            Text(
-                text = "Aprende el habla boliviana de forma divertida",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FilledTonalButton(onClick = onGoToSearch, modifier = Modifier.weight(1f)) {
-                    Text("Buscar palabra")
-                }
-                Button(onClick = onGoToFlashcards, modifier = Modifier.weight(1f)) {
-                    Text("Modo Flashcards")
-                }
-            }
         }
+    ) { scaffoldPadding ->
+        Column(modifier = Modifier.fillMaxSize().padding(scaffoldPadding)) {
+            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+                Text(
+                    text = "¡Bienvenido!",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Aprende el habla boliviana de forma divertida",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
-        Text(
-            text = "Palabras para explorar",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-        )
+                Spacer(Modifier.height(16.dp))
 
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            itemsIndexed(words, key = { _, word -> word.id }) { index, word ->
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn(tween(300, delayMillis = index * 40)) +
-                            slideInVertically(tween(300, delayMillis = index * 40)) { it / 4 }
-                ) {
-                    WordCard(
-                        word = word,
-                        onClick = { onWordClick(word) },
-                        onToggleFavorite = { viewModel.toggleFavorite(word) },
-                        onPlaySound = { speak(word.exampleSentence) }
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    FilledTonalButton(onClick = onGoToSearch, modifier = Modifier.weight(1f)) {
+                        Text("Buscar palabra")
+                    }
+                    Button(onClick = onGoToFlashcards, modifier = Modifier.weight(1f)) {
+                        Text("Modo Flashcards")
+                    }
                 }
             }
-            item { Spacer(Modifier.height(80.dp)) }
+
+            Text(
+                text = "Palabras para explorar",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+            )
+
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                itemsIndexed(words, key = { _, word -> word.id }) { index, word ->
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(tween(300, delayMillis = index * 40)) +
+                                slideInVertically(tween(300, delayMillis = index * 40)) { it / 4 }
+                    ) {
+                        WordCard(
+                            word = word,
+                            onClick = { onWordClick(word) },
+                            onToggleFavorite = { viewModel.toggleFavorite(word) },
+                            onPlaySound = { speak(word.exampleSentence) }
+                        )
+                    }
+                }
+                item { Spacer(Modifier.height(90.dp)) }
+            }
         }
     }
 }
