@@ -1,7 +1,5 @@
 name: Compilar APK
 
-# Se ejecuta automáticamente cada vez que subes cambios a "main",
-# y también se puede lanzar manualmente desde la pestaña "Actions" en GitHub.
 on:
   push:
     branches: [ "main" ]
